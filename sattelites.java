@@ -7,59 +7,64 @@ import java.io.*;
  */
 public class sattelites {
     public static void main(String[] args) throws Exception{
-        URL oracle = new URL("https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle");
+
+
+        URL oracle = new URL(URL());
         BufferedReader in = new BufferedReader(
         new InputStreamReader(oracle.openStream()));
-
-        // asking user for input 
-        Scanner scanner = new Scanner(System.in);
-        System.out.println( "What would you like to know? Options:\n" +
-                            "Satellite Catalog Number (enter SCN)\n" +
-                            "Classification (enter CLASS)\n" +
-                            "Last Two digits of Launch year (enter LY)\n" +
-                            "Launch number of the year (enter LNOTY)\n" +
-                            "Piece of the launch (enter POTL)\n" +
-                            "Epoch Year (enter EY)\n" +
-                            "Epoch day of the year (enter ED)\n" +
-                            "First derivative of mean motion (enter Dy1)\n" +
-                            "Second derivative of mean motion (enter Dy2)\n" +
-                            "B* the drag term (enter DRAG)\n" +
-                            "Ephemeris type (enter ET)\n" +
-                            "Element set number (enter ESN)\n" +
-                            "Checksum (enter CHECKSUM)\n" +
-                            "Inclination (enter INCL)\n" +
-                            "Right Ascension of the ascending node (enter RA)\n" +
-                            "Eccentricity (enter ECCEN) \n" +
-                               "Argument of perigee (enter AOP) \n" +
-                            "Mean anomaly (enter MA) \n" + 
-                            "Mean Motion (enter MM)\n" +
-                            "Revolution number at epoch (enter RNAE)\n");
-        String userInput = scanner.nextLine();
-        
 
         // initialize variables
         String name;
         String TLE1;
         String TLE2;
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Would You like details on a specific sattelite or all of them? (enter Sattelite catalog number or ALL): ");
+        String userSCN = scanner.nextLine();
+        
         while ((name = in.readLine()) != null) {
-            //reads the TLE1 and TLE2 Line
             TLE1 = in.readLine();
             TLE2 = in.readLine();
-            
-        switch (userInput.toUpperCase()) {
-            case "SCN": SCN();
+            if (userSCN.equalsIgnoreCase("ALL")) {
+                System.out.println(SCN(TLE1) + " " + Epoch(TLE1) + " " + Inclination(TLE2) + " " + name);
+                    
+            }
+            else if(TLE1.substring(2, 7).equals(userSCN)){
+                System.out.println(SCN(TLE1) + " " + Epoch(TLE1) + " " + Inclination(TLE2) + " " + name);
+            }
+            else{
+                System.out.println("It seems the Sattelite catalog number you entered in not In the list! Maybe try ALL");
+            }
+        }
 
-            default:
-                break;
-        }
-             
+         in.close();     
             
-        }
-    in.close();
     }
-    public String SCN() {
-          
-        return null;
-        
+    
+    public static String URL() {
+        Scanner scanner1 = new Scanner(System.in);
+        System.out.println("Would You like to see data on Last 30 day launches, 100 brightest, or maybe even Active satelites? (enter 30, 100, ALL respectivly): ");
+        String userweb = scanner1.nextLine();
+        String url = "";
+        if (userweb.equals("30")){
+            url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=last-30-days&FORMAT=tle";
+        }
+        else if (userweb.equals("100")){
+            url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle";
+        }
+        else if (userweb.equalsIgnoreCase("ALL")){
+            url = "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle";
+        }
+        return url;
+    }
+
+    public static String SCN(String TLE) {     
+        return TLE.substring(2,7);
+    }
+    public static int Epoch(String TLE) {     
+        return Integer.parseInt(TLE.substring(18,20));
+    }
+    public static double Inclination(String TLE) {     
+        return Double.parseDouble(TLE.substring(8,16));
     }
 }
